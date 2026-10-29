@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cosmo-config
+  namespace: cosmo
+data:
+  mqtt-broker: "mosquitto.cosmo.svc.cluster.local"
+  mqtt-port: "1883"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cosmo-redis
+  namespace: cosmo
+  annotations:
+    kubernetes.io/description: "Populated by external secret operator or CI pipeline — never commit plaintext values"
+type: Opaque
+stringData:
+  url: "redis://redis.cosmo.svc.cluster.local:6379/0"

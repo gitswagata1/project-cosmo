@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: extraction
+  namespace: cosmo
+  labels:
+    app: extraction
+    app.kubernetes.io/part-of: project-cosmo
+spec:
+  selector:
+    app: extraction
+  ports:
+    - name: metrics
+      port: 9091
+      targetPort: 9091
+      protocol: TCP
+  type: ClusterIP

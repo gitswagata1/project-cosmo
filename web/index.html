@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project COSMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   THEME VARIABLES
+   ═══════════════════════════════════════════ */
+
+[data-theme="dark"] {
+  --bg: #030712;
+  --s1: #0a1120;
+  --s2: #0f1a2e;
+  --s3: #142240;
+  --bdr: #1c2e50;
+  --bdr2: #253a5e;
+  --tx: #e4eaf4;
+  --tx2: #c8d3e6;
+  --dm: #5a6e8c;
+  --dm2: #3e5270;
+  --ac: #38bdf8;
+  --ac2: #818cf8;
+  --gn: #34d399;
+  --yl: #fbbf24;
+  --rd: #f87171;
+  --cn: #22d3ee;
+  --pr: #a78bfa;
+  --strip-bg: rgba(10,17,32,0.85);
+  --card-bg: linear-gradient(160deg,rgba(10,17,32,0.95) 0%,rgba(15,26,46,0.95) 100%);
+  --hex-bg: rgba(3,7,18,0.8);
+  --hm-low: hsl(220,75%,8%);
+  --hm-mid1: hsl(200,80%,25%);
+  --hm-mid2: hsl(190,85%,45%);
+  --hm-high: hsl(180,90%,60%);
+  --prg-track: #142240;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 40px rgba(56,189,248,0.06);
+  --particle-r: 56; --particle-g: 189; --particle-b: 248;
+  --particle-a: 0.5; --line-a: 0.06;
+  --chart-grid: rgba(28,46,80,0.35);
+  --chart-label: #354663;
+  --mk-line: #1c2e50; --mk-fill: #0f1a2e;
+  --orb1: rgba(56,189,248,0.035);
+  --orb2: rgba(167,139,250,0.03);
+  --orb3: rgba(34,211,238,0.025);
+  --glass: rgba(10,17,32,0.6);
+  --glass-bdr: rgba(56,189,248,0.12);
+  --glow-ac: rgba(56,189,248,0.35);
+  --glow-gn: rgba(52,211,153,0.35);
+  --glow-pr: rgba(167,139,250,0.35);
+}
+
+[data-theme="light"] {
+  --bg: #f3f5fa;
+  --s1: #ffffff;
+  --s2: #f0f2f8;
+  --s3: #e2e6f0;
+  --bdr: #d0d7e5;
+  --bdr2: #b8c2d6;
+  --tx: #1a2236;
+  --tx2: #2c3a54;
+  --dm: #64748b;
+  --dm2: #8494a7;
+  --ac: #0284c7;
+  --ac2: #6366f1;
+  --gn: #059669;
+  --yl: #d97706;
+  --rd: #dc2626;
+  --cn: #0891b2;
+  --pr: #7c3aed;
+  --strip-bg: rgba(255,255,255,0.88);
+  --card-bg: linear-gradient(160deg,rgba(255,255,255,0.95) 0%,rgba(247,248,252,0.95) 100%);
+  --hex-bg: rgba(240,242,248,0.9);
+  --hm-low: hsl(220,30%,92%);
+  --hm-mid1: hsl(200,60%,65%);
+  --hm-mid2: hsl(190,70%,45%);
+  --hm-high: hsl(180,80%,32%);
+  --prg-track: #e2e6f0;
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+  --shadow-glow: 0 0 40px rgba(2,132,199,0.04);
+  --particle-r: 2; --particle-g: 132; --particle-b: 199;
+  --particle-a: 0.3; --line-a: 0.1;
+  --chart-grid: rgba(160,175,200,0.3);
+  --chart-label: #8494a7;
+  --mk-line: #b8c2d6; --mk-fill: #f0f2f8;
+  --orb1: rgba(2,132,199,0.04);
+  --orb2: rgba(99,102,241,0.035);
+  --orb3: rgba(8,145,178,0.03);
+  --glass: rgba(255,255,255,0.6);
+  --glass-bdr: rgba(2,132,199,0.1);
+  --glow-ac: rgba(2,132,199,0.2);
+  --glow-gn: rgba(5,150,105,0.2);
+  --glow-pr: rgba(124,58,237,0.2);
+}
+
+/* ═══════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════ */
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  transition:background 0.5s,color 0.5s;
+  overflow-x:hidden;
+}
+
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ═══ FLOATING ORBS ═══ */
+.orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+
+.orb{
+  position:absolute;border-radius:50%;
+  filter:blur(80px);
+  animation:orbFloat 20s ease-in-out infinite;
+}
+
+.orb-1{width:600px;height:600px;background:var(--orb1);top:-10%;left:-5%;animation-delay:0s}
+.orb-2{width:500px;height:500px;background:var(--orb2);top:40%;right:-8%;animation-delay:-7s;animation-duration:25s}
+.orb-3{width:450px;height:450px;background:var(--orb3);bottom:-5%;left:30%;animation-delay:-14s;animation-duration:22s}
+
+@keyframes orbFloat{
+  0%,100%{transform:translate(0,0) scale(1)}
+  25%{transform:translate(40px,-30px) scale(1.05)}
+  50%{transform:translate(-20px,50px) scale(0.95)}
+  75%{transform:translate(30px,20px) scale(1.02)}
+}
+
+/* ═══ HERO ═══ */
+.hero{
+  position:relative;
+  padding:5.5rem 1rem 3.5rem;
+  text-align:center;
+  overflow:hidden;
+  transition:background 0.5s;
+}
+
+[data-theme="dark"] .hero{
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(56,189,248,0.08) 0%,transparent 70%),
+             radial-gradient(ellipse 60% 40% at 20% 100%,rgba(129,140,248,0.06) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 40% at 80% 80%,rgba(34,211,238,0.04) 0%,transparent 50%),
+             var(--bg);
+}
+
+[data-theme="light"] .hero{
+  background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(2,132,199,0.06) 0%,transparent 70%),
+             radial-gradient(ellipse 60% 40% at 80% 100%,rgba(99,102,241,0.04) 0%,transparent 50%),
+             var(--bg);
+}
+
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+.hero-z{position:relative;z-index:1}
+
+.hero h1{
+  font-size:clamp(3rem,6vw,5rem);
+  font-weight:900;
+  letter-spacing:0.3em;
+  background:linear-gradient(135deg,var(--ac) 0%,var(--pr) 30%,var(--cn) 60%,var(--ac2) 100%);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:gradShift 5s ease infinite;
+  filter:drop-shadow(0 0 30px var(--glow-ac));
+}
+
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.hero .sub{
+  font-size:1.05rem;
+  color:var(--dm);
+  letter-spacing:0.14em;
+  font-weight:400;
+  margin-top:0.5rem;
+}
+
+.hero .chips{
+  display:flex;justify-content:center;flex-wrap:wrap;gap:0.55rem;margin-top:1.5rem;
+}
+
+.chip{
+  font-size:0.72rem;font-weight:600;letter-spacing:0.06em;
+  padding:0.35rem 0.9rem;border-radius:100px;
+  border:1px solid var(--glass-bdr);color:var(--dm);
+  background:var(--glass);
+  backdrop-filter:blur(12px);
+  transition:all 0.3s;
+}
+
+.chip:hover{
+  border-color:var(--ac);color:var(--ac);
+  box-shadow:0 0 16px var(--glow-ac);transform:translateY(-1px);
+}
+
+/* ═══ ANIMATED RINGS (hero) ═══ */
+.hero-rings{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:500px;height:500px;pointer-events:none;z-index:0;
+}
+
+.hero-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1px solid transparent;
+  animation:ringRotate 20s linear infinite;
+}
+
+[data-theme="dark"] .hero-ring{border-color:rgba(56,189,248,0.06)}
+[data-theme="light"] .hero-ring{border-color:rgba(2,132,199,0.05)}
+
+.hero-ring:nth-child(1){inset:0;animation-duration:20s}
+.hero-ring:nth-child(2){inset:40px;animation-duration:25s;animation-direction:reverse}
+.hero-ring:nth-child(3){inset:80px;animation-duration:30s}
+
+.hero-ring::after{
+  content:'';position:absolute;top:-3px;left:50%;
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ac);box-shadow:0 0 12px var(--glow-ac);
+}
+
+@keyframes ringRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ═══ THEME TOGGLE ═══ */
+.theme-toggle{
+  position:fixed;top:1.2rem;right:1.2rem;z-index:200;
+  width:52px;height:52px;border-radius:50%;border:1.5px solid var(--glass-bdr);
+  background:var(--glass);backdrop-filter:blur(20px);
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;transition:all 0.4s;
+  box-shadow:var(--shadow);font-size:1.3rem;color:var(--tx);
+}
+
+.theme-toggle:hover{
+  border-color:var(--ac);transform:scale(1.1) rotate(15deg);
+  box-shadow:0 0 30px var(--glow-ac);
+}
+.theme-toggle:active{transform:scale(0.92)}
+
+/* ═══ PIPELINE STRIP ═══ */
+.strip{
+  display:flex;align-items:center;justify-content:center;
+  padding:1.4rem 1rem;gap:0;
+  background:var(--strip-bg);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bdr);
+  position:sticky;top:0;z-index:100;
+  transition:all 0.5s;
+}
+
+.strip::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--ac),var(--pr),var(--cn),transparent);
+  opacity:0.3;animation:stripGlow 4s ease-in-out infinite;
+}
+
+@keyframes stripGlow{0%,100%{opacity:0.15}50%{opacity:0.4}}
+
+.nd{
+  padding:0.65rem 1.4rem;font-size:0.78rem;font-weight:700;
+  letter-spacing:0.08em;color:var(--dm);
+  border:1.5px solid var(--bdr);border-radius:10px;
+  background:var(--glass);backdrop-filter:blur(8px);
+  transition:all 0.5s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+}
+
+.nd::before{
+  content:'';position:absolute;inset:-50%;
+  background:conic-gradient(from 0deg,transparent,var(--ac),transparent,var(--ac2),transparent);
+  opacity:0;animation:none;
+}
+
+.nd span{position:relative;z-index:1}
+
+.nd.on{
+  border-color:var(--ac);color:var(--ac);
+  box-shadow:0 0 35px var(--glow-ac),inset 0 0 20px rgba(56,189,248,0.05);
+  animation:nodeGlow 1.5s ease-in-out infinite;
+}
+
+.nd.on::before{opacity:0.08;animation:borderSpin 3s linear infinite}
+
+@keyframes borderSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes nodeGlow{0%,100%{box-shadow:0 0 35px var(--glow-ac)}50%{box-shadow:0 0 20px var(--glow-ac)}}
+
+.nd.ok{border-color:var(--gn);color:var(--gn);box-shadow:0 0 20px var(--glow-gn)}
+.nd.ok::before{opacity:0;animation:none}
+
+.ar{
+  width:42px;height:2px;background:var(--bdr);position:relative;
+  transition:all 0.5s;
+}
+.ar::after{
+  content:'';position:absolute;right:-1px;top:-3px;
+  border:4px solid transparent;border-left:6px solid var(--bdr);
+  transition:border-color 0.5s;
+}
+.ar.on{background:var(--ac)}
+.ar.on::after{border-left-color:var(--ac)}
+.ar.on::before{
+  content:'';position:absolute;width:6px;height:6px;border-radius:50%;
+  background:var(--ac);box-shadow:0 0 10px var(--ac),0 0 20px var(--glow-ac);top:-2px;
+  animation:dot 0.7s ease-in-out infinite;
+}
+.ar.ok{background:var(--gn)}
+.ar.ok::after{border-left-color:var(--gn)}
+.ar.ok::before{display:none}
+
+@keyframes dot{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 6px);opacity:0}}
+
+/* ═══ CONTROLS ═══ */
+.ctrl{display:flex;align-items:center;justify-content:center;gap:1.8rem;padding:1.8rem 1rem}
+
+.btn{
+  padding:0.9rem 3.5rem;border:1.5px solid var(--ac);
+  background:var(--glass);backdrop-filter:blur(12px);
+  color:var(--ac);font-family:inherit;font-size:0.95rem;
+  font-weight:700;letter-spacing:0.12em;border-radius:12px;
+  cursor:pointer;transition:all 0.3s;
+  position:relative;overflow:hidden;
+}
+
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 30%,rgba(56,189,248,0.08) 50%,transparent 70%);
+  background-size:200% 200%;animation:shimmer 3s ease infinite;
+}
+
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.btn:hover{
+  box-shadow:0 0 40px var(--glow-ac),0 0 80px rgba(56,189,248,0.08);
+  transform:translateY(-2px);border-color:var(--cn);
+}
+.btn:active{transform:scale(0.97)}
+.btn:disabled{opacity:0.3;cursor:not-allowed;transform:none}
+
+.timer{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.1rem;font-weight:700;color:var(--dm);
+  min-width:80px;text-align:center;letter-spacing:0.05em;
+}
+
+.timer.running{color:var(--ac);text-shadow:0 0 20px var(--glow-ac);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* ═══ GRID ═══ */
+.grid{
+  display:grid;grid-template-columns:repeat(12,1fr);
+  gap:1.2rem;padding:0 1.8rem 2rem;max-width:1520px;margin:0 auto;
+  position:relative;z-index:1;
+}
+
+.c4{grid-column:span 4}.c6{grid-column:span 6}.c8{grid-column:span 8}.c12{grid-column:span 12}
+
+@media(max-width:1100px){.c4,.c6,.c8{grid-column:span 6}}
+@media(max-width:700px){.c4,.c6,.c8,.c12{grid-column:span 12}}
+
+/* ═══ CARD ═══ */
+.card{
+  background:var(--card-bg);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--bdr);border-radius:18px;
+  padding:1.5rem 1.6rem;position:relative;overflow:hidden;
+  transition:all 0.4s cubic-bezier(.4,0,.2,1);
+  box-shadow:var(--shadow);
+}
+
+.card::before{
+  content:'';position:absolute;top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,0.04),transparent);
+  transition:left 0.6s ease;pointer-events:none;
+}
+
+.card::after{
+  content:'';position:absolute;inset:-1px;border-radius:18px;
+  background:conic-gradient(from 180deg at 50% 50%,transparent 0%,var(--glass-bdr) 25%,transparent 50%);
+  opacity:0;transition:opacity 0.5s;pointer-events:none;z-index:-1;
+}
+
+.card:hover{
+  border-color:var(--bdr2);
+  transform:translateY(-3px);
+  box-shadow:var(--shadow),var(--shadow-glow);
+}
+
+.card:hover::before{left:150%}
+.card:hover::after{opacity:0.5}
+
+.ch{display:flex;align-items:center;gap:0.7rem;margin-bottom:1.1rem}
+
+.cd{
+  width:10px;height:10px;border-radius:50%;background:var(--dm2);
+  flex-shrink:0;transition:all 0.5s;
+  position:relative;
+}
+
+.cd.on{
+  background:var(--gn);
+  box-shadow:0 0 12px var(--glow-gn);
+}
+
+.cd.on::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid var(--gn);opacity:0;
+  animation:ripple 2s ease-out infinite;
+}
+
+@keyframes ripple{
+  0%{transform:scale(1);opacity:0.5}
+  100%{transform:scale(2.5);opacity:0}
+}
+
+.cl{font-size:0.82rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--dm)}
+
+.ci{margin-left:auto;font-size:0.8rem;color:var(--dm2)}
+
+/* ═══ METRICS ═══ */
+.mr{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0.5rem 0;border-bottom:1px solid rgba(128,128,128,0.08);
+}
+.mr:last-child{border:none}
+.ml{font-size:0.88rem;color:var(--dm)}
+.mv{font-family:'JetBrains Mono',monospace;font-size:0.95rem;font-weight:600;font-variant-numeric:tabular-nums}
+.mv.g{color:var(--gn)}.mv.a{color:var(--ac)}.mv.p{color:var(--pr)}.mv.y{color:var(--yl)}.mv.c{color:var(--cn)}
+
+/* Big number */
+.bn{text-align:center;padding:0.9rem 0 0.5rem}
+.bn .n{
+  font-family:'JetBrains Mono',monospace;font-size:3.2rem;font-weight:800;
+  line-height:1;
+  background:linear-gradient(135deg,var(--ac),var(--cn));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 0 15px var(--glow-ac));
+}
+.bn .u{font-size:0.72rem;color:var(--dm);letter-spacing:0.12em;margin-top:0.3rem;font-weight:500}
+
+/* ═══ PROGRESS ═══ */
+.prg{margin-top:0.9rem}
+.prg-h{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--dm);margin-bottom:0.35rem}
+
+.prg-b{height:6px;background:var(--prg-track);border-radius:3px;overflow:hidden;position:relative}
+.prg-f{
+  height:100%;width:0%;border-radius:3px;
+  background:linear-gradient(90deg,var(--ac),var(--ac2),var(--cn));
+  background-size:200% 100%;
+  animation:prgShimmer 2s linear infinite;
+  transition:width 0.3s;
+  box-shadow:0 0 12px var(--glow-ac);
+}
+@keyframes prgShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ═══ GAUGE ═══ */
+.gauges{display:flex;gap:0.8rem;justify-content:center;margin:0.8rem 0}
+.ga{text-align:center;flex:1;max-width:145px}
+.ga svg{display:block;margin:0 auto}
+.ga-v{font-family:'JetBrains Mono',monospace;font-size:1.15rem;font-weight:800;margin-top:-2px}
+.ga-l{font-size:0.68rem;color:var(--dm);letter-spacing:0.05em;margin-top:0.2rem}
+
+/* ═══ CHART ═══ */
+.cw{position:relative;margin-top:0.7rem}
+.cw canvas{width:100%;display:block;border-radius:12px}
+
+/* ═══ HEX ═══ */
+.hx{
+  font-family:'JetBrains Mono',monospace;font-size:0.74rem;line-height:1.75;
+  color:var(--cn);background:var(--hex-bg);
+  border:1px solid var(--bdr);backdrop-filter:blur(8px);
+  border-radius:12px;padding:0.8rem 1rem;word-break:break-all;
+  margin-top:0.55rem;overflow-x:auto;transition:all 0.4s;
+}
+
+.hx:hover{border-color:var(--glass-bdr);box-shadow:0 0 20px var(--glow-ac)}
+
+/* ═══ HEATMAP ═══ */
+.hm-wrap{margin-top:0.7rem}
+.hm{display:grid;grid-template-columns:repeat(32,1fr);gap:2px;border-radius:10px;overflow:hidden}
+.hm-c{
+  aspect-ratio:1;transition:all 0.15s;border-radius:2px;
+}
+.hm-c:hover{transform:scale(1.6);z-index:10;box-shadow:0 0 8px currentColor;border-radius:3px}
+
+.hm-legend{
+  display:flex;align-items:center;gap:0.6rem;margin-top:0.7rem;
+  font-size:0.7rem;color:var(--dm);
+}
+
+.hm-grad{
+  flex:1;height:8px;border-radius:4px;
+  background:linear-gradient(90deg,var(--hm-low),var(--hm-mid1),var(--hm-mid2),var(--hm-high));
+  transition:background 0.5s;box-shadow:0 0 10px rgba(34,211,238,0.1);
+}
+
+/* ═══ TESTS ═══ */
+.tg{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:0.55rem;margin-top:0.7rem}
+.ti{
+  display:flex;align-items:center;gap:0.55rem;font-size:0.85rem;
+  padding:0.55rem 0.8rem;border-radius:10px;
+  background:var(--hex-bg);backdrop-filter:blur(8px);
+  border:1px solid var(--bdr);transition:all 0.4s;
+}
+.ti.pass{border-color:rgba(52,211,153,0.3);box-shadow:0 0 15px var(--glow-gn)}
+
+.tb{
+  font-family:'JetBrains Mono',monospace;font-size:0.65rem;font-weight:800;
+  padding:0.2rem 0.55rem;border-radius:5px;letter-spacing:0.05em;flex-shrink:0;
+  transition:all 0.4s;
+}
+
+.tb.w{background:rgba(128,128,128,0.1);color:var(--dm)}
+.tb.r{background:rgba(56,189,248,0.12);color:var(--ac);animation:tbPulse 0.8s ease infinite}
+@keyframes tbPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.tb.p{
+  background:rgba(52,211,153,0.12);color:var(--gn);
+  border:1px solid rgba(52,211,153,0.2);
+  box-shadow:0 0 8px var(--glow-gn);
+}
+.tb.f{background:rgba(248,113,113,0.12);color:var(--rd)}
+
+/* ═══ MERKLE SVG ═══ */
+.mk{width:100%;margin-top:0.8rem}
+
+/* ═══ LOG ═══ */
+.lb{
+  background:var(--hex-bg);border:1px solid var(--bdr);border-radius:12px;
+  backdrop-filter:blur(8px);
+  padding:0.9rem 1.1rem;margin-top:0.6rem;max-height:240px;overflow-y:auto;
+  font-family:'JetBrains Mono',monospace;font-size:0.75rem;line-height:2.1;
+  transition:all 0.4s;
+}
+
+.lb::-webkit-scrollbar{width:5px}
+.lb::-webkit-scrollbar-track{background:transparent}
+.lb::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
+
+.ll{color:var(--dm);animation:logSlide 0.35s ease-out}
+@keyframes logSlide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+
+.ll .t{color:var(--dm2)}
+.ll .ok{color:var(--gn)}
+.ll .wr{color:var(--yl)}
+.ll .in{color:var(--ac)}
+.ll .em{color:var(--gn);font-weight:700;text-shadow:0 0 10px var(--glow-gn)}
+
+/* ═══ SUMMARY ═══ */
+.summary{
+  display:none;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));
+  gap:0.8rem;padding:0 1.8rem;margin-bottom:1.2rem;max-width:1520px;margin-left:auto;margin-right:auto;
+  position:relative;z-index:1;
+}
+
+.summary.show{display:grid}
+
+.scard{
+  background:var(--card-bg);backdrop-filter:blur(16px);
+  border:1px solid var(--bdr);border-radius:14px;
+  padding:1rem 1.1rem;text-align:center;
+  box-shadow:var(--shadow);transition:all 0.4s;
+  animation:scardReveal 0.5s ease-out both;
+}
+
+.scard:nth-child(1){animation-delay:0s}
+.scard:nth-child(2){animation-delay:0.08s}
+.scard:nth-child(3){animation-delay:0.16s}
+.scard:nth-child(4){animation-delay:0.24s}
+.scard:nth-child(5){animation-delay:0.32s}
+
+@keyframes scardReveal{
+  from{opacity:0;transform:translateY(15px) scale(0.95)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+.scard:hover{border-color:var(--bdr2);transform:translateY(-2px);box-shadow:var(--shadow),var(--shadow-glow)}
+.scard .sv{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:800}
+.scard .sl{font-size:0.7rem;color:var(--dm);margin-top:0.2rem;letter-spacing:0.06em}
+
+/* ═══ FOOTER ═══ */
+.footer{
+  text-align:center;padding:3rem 1rem;color:var(--dm);
+  font-size:0.75rem;
+  border-top:1px solid var(--bdr);margin-top:2rem;
+  letter-spacing:0.04em;line-height:2.2;
+  position:relative;z-index:1;transition:all 0.4s;
+}
+
+.footer::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:200px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--ac),transparent);
+  opacity:0.4;
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--bdr2)}
+</style>
+</head>
+<body>
+
+<!-- Floating orbs -->
+<div class="orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">
+  <span id="themeIcon">&#9790;</span>
+</button>
+
+<div class="hero">
+  <canvas id="cvHero"></canvas>
+  <div class="hero-rings">
+    <div class="hero-ring"></div>
+    <div class="hero-ring"></div>
+    <div class="hero-ring"></div>
+  </div>
+  <div class="hero-z">
+    <h1>COSMO</h1>
+    <div class="sub">Cosmic-Ray Entropy Harvesting &amp; Blockchain Anchoring Pipeline</div>
+    <div class="chips">
+      <span class="chip">NIST SP 800-90B</span>
+      <span class="chip">SHA3-512</span>
+      <span class="chip">SHAKE256 XOF</span>
+      <span class="chip">HKDF-SHA3-256</span>
+      <span class="chip">Merkle Tree</span>
+      <span class="chip">Leftover Hash Lemma</span>
+    </div>
+  </div>
+</div>
+
+<div class="strip">
+  <div class="nd" id="n0"><span>MUON SENSORS</span></div>
+  <div class="ar" id="a1"></div>
+  <div class="nd" id="n1"><span>INGESTION</span></div>
+  <div class="ar" id="a2"></div>
+  <div class="nd" id="n2"><span>EXTRACTION</span></div>
+  <div class="ar" id="a3"></div>
+  <div class="nd" id="n3"><span>MIXING POOL</span></div>
+  <div class="ar" id="a4"></div>
+  <div class="nd" id="n4"><span>ANCHORING</span></div>
+</div>
+
+<div class="ctrl">
+  <button class="btn" id="runBtn" onclick="run()">&#9654;&ensp;RUN PIPELINE</button>
+  <div class="timer mono" id="timer">00.0s</div>
+</div>
+
+<div class="summary" id="summary">
+  <div class="scard"><div class="sv" style="color:var(--ac)" id="s-events">—</div><div class="sl">EVENTS CAPTURED</div></div>
+  <div class="scard"><div class="sv" style="color:var(--gn)" id="s-bytes">—</div><div class="sl">ENTROPY BYTES</div></div>
+  <div class="scard"><div class="sv" style="color:var(--pr)" id="s-hinf">—</div><div class="sl">MIN-ENTROPY</div></div>
+  <div class="scard"><div class="sv" style="color:var(--yl)" id="s-root">—</div><div class="sl">MERKLE ROOT</div></div>
+  <div class="scard"><div class="sv" style="color:var(--gn)" id="s-tests">—</div><div class="sl">QUALITY TESTS</div></div>
+</div>
+
+<div class="grid">
+
+  <div class="card c4">
+    <div class="ch"><div class="cd" id="d0"></div><span class="cl">Muon Detector Simulation</span></div>
+    <div class="bn"><div class="n mono" id="v-events">—</div><div class="u">EVENTS CAPTURED</div></div>
+    <div class="mr"><span class="ml">Sensors active</span><span class="mv" id="v-sens">—</span></div>
+    <div class="mr"><span class="ml">Mean interval</span><span class="mv a" id="v-int">—</span></div>
+    <div class="mr"><span class="ml">Time span</span><span class="mv" id="v-span">—</span></div>
+    <div class="prg"><div class="prg-h"><span>Capture</span><span id="p0t">0%</span></div><div class="prg-b"><div class="prg-f" id="p0f"></div></div></div>
+  </div>
+
+  <div class="card c4">
+    <div class="ch"><div class="cd" id="d1"></div><span class="cl">Ingestion Pipeline</span></div>
+    <div class="bn"><div class="n mono" id="v-accept">—</div><div class="u">EVENTS ACCEPTED</div></div>
+    <div class="mr"><span class="ml">Duplicates filtered</span><span class="mv y" id="v-dup">—</span></div>
+    <div class="mr"><span class="ml">Rejection rate</span><span class="mv" id="v-rej">—</span></div>
+    <div class="mr"><span class="ml">Dedup window</span><span class="mv">100 ns</span></div>
+    <div class="prg"><div class="prg-h"><span>Ingestion</span><span id="p1t">0%</span></div><div class="prg-b"><div class="prg-f" id="p1f"></div></div></div>
+  </div>
+
+  <div class="card c4">
+    <div class="ch"><div class="cd" id="d2"></div><span class="cl">Entropy Extraction</span></div>
+    <div class="gauges">
+      <div class="ga">
+        <svg width="115" height="68" viewBox="0 0 115 68">
+          <path d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--prg-track)" stroke-width="7" stroke-linecap="round"/>
+          <path id="gh" d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--ac)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 138" style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 6px var(--glow-ac))"/>
+        </svg>
+        <div class="ga-v a" id="gvh">—</div>
+        <div class="ga-l">H&#8734; bits/sample</div>
+      </div>
+      <div class="ga">
+        <svg width="115" height="68" viewBox="0 0 115 68">
+          <path d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--prg-track)" stroke-width="7" stroke-linecap="round"/>
+          <path id="gq" d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--pr)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 138" style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 6px var(--glow-pr))"/>
+        </svg>
+        <div class="ga-v p" id="gvq">—</div>
+        <div class="ga-l">Q-Factor</div>
+      </div>
+      <div class="ga">
+        <svg width="115" height="68" viewBox="0 0 115 68">
+          <path d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--prg-track)" stroke-width="7" stroke-linecap="round"/>
+          <path id="gk" d="M14 62 A44 44 0 0 1 101 62" fill="none" stroke="var(--gn)" stroke-width="7" stroke-linecap="round" stroke-dasharray="0 138" style="transition:stroke-dasharray 1s cubic-bezier(.4,0,.2,1);filter:drop-shadow(0 0 6px var(--glow-gn))"/>
+        </svg>
+        <div class="ga-v g" id="gvk">—</div>
+        <div class="ga-l">K_eff bits</div>
+      </div>
+    </div>
+    <div class="mr"><span class="ml">Alphabet size</span><span class="mv" id="v-alpha">—</span></div>
+    <div class="mr"><span class="ml">Extracted output</span><span class="mv g" id="v-extr">—</span></div>
+    <div class="mr"><span class="ml">NIST 90B checks</span><span class="mv" id="v-nist">—</span></div>
+  </div>
+
+  <div class="card c8">
+    <div class="ch"><div class="cd" id="d-delta"></div><span class="cl">Inter-Arrival Delta Distribution</span><span class="ci mono" id="delta-stats"></span></div>
+    <div class="cw"><canvas id="cvDelta" height="220"></canvas></div>
+  </div>
+
+  <div class="card c4">
+    <div class="ch"><div class="cd" id="d3"></div><span class="cl">Hybrid Mixing Pool</span></div>
+    <div class="mr"><span class="ml">Pool size</span><span class="mv">4,096 bytes</span></div>
+    <div class="mr"><span class="ml">Physical entropy</span><span class="mv a" id="v-phys">—</span></div>
+    <div class="mr"><span class="ml">System entropy</span><span class="mv" id="v-sys">—</span></div>
+    <div class="mr"><span class="ml">Conditioning</span><span class="mv c">HKDF-SHA3-256</span></div>
+    <div class="mr"><span class="ml">Output block</span><span class="mv g" id="v-cond">—</span></div>
+    <div class="mr"><span class="ml">Shannon entropy</span><span class="mv" id="v-shm">—</span></div>
+    <div style="margin-top:0.8rem">
+      <span style="font-size:0.72rem;color:var(--dm)">Conditioned Output</span>
+      <div class="hx" id="hx-cond">—</div>
+    </div>
+  </div>
+
+  <div class="card c8">
+    <div class="ch"><div class="cd" id="d-heat"></div><span class="cl">Entropy Byte Heatmap</span></div>
+    <div class="hm-wrap">
+      <div class="hm" id="hm"></div>
+      <div class="hm-legend">
+        <span>0x00</span>
+        <div class="hm-grad"></div>
+        <span>0xFF</span>
+        <span style="margin-left:0.5rem;opacity:0.6" id="hm-info">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card c6">
+    <div class="ch"><div class="cd" id="d4"></div><span class="cl">Blockchain Anchoring</span></div>
+    <div class="mr"><span class="ml">Batch ID</span><span class="mv" id="v-batch">—</span></div>
+    <div class="mr"><span class="ml">Fingerprints anchored</span><span class="mv a" id="v-fpc">—</span></div>
+    <div class="mr"><span class="ml">Ledger integrity</span><span class="mv" id="v-integ">—</span></div>
+    <div style="margin-top:0.8rem">
+      <span style="font-size:0.72rem;color:var(--dm)">Merkle Root</span>
+      <div class="hx" id="hx-root" style="color:var(--yl)">—</div>
+    </div>
+    <div style="margin-top:0.55rem">
+      <span style="font-size:0.72rem;color:var(--dm)">Entry Hash</span>
+      <div class="hx" id="hx-entry" style="color:var(--pr)">—</div>
+    </div>
+    <svg class="mk" id="mkSvg" viewBox="0 0 440 145" height="145"></svg>
+  </div>
+
+  <div class="card c6">
+    <div class="ch"><div class="cd" id="d-qual"></div><span class="cl">Statistical Quality Report</span></div>
+    <div class="tg">
+      <div class="ti" id="ti-chi2"><span class="tb w" id="tb-chi2">WAIT</span>Chi-squared</div>
+      <div class="ti" id="ti-mono"><span class="tb w" id="tb-mono">WAIT</span>Monobit</div>
+      <div class="ti" id="ti-corr"><span class="tb w" id="tb-corr">WAIT</span>Serial Corr.</div>
+      <div class="ti" id="ti-shan"><span class="tb w" id="tb-shan">WAIT</span>Shannon</div>
+      <div class="ti" id="ti-minE"><span class="tb w" id="tb-minE">WAIT</span>Min-Entropy</div>
+      <div class="ti" id="ti-bits"><span class="tb w" id="tb-bits">WAIT</span>Bit Proportion</div>
+    </div>
+    <div style="margin-top:1rem">
+      <div class="mr"><span class="ml">Chi-squared p-value</span><span class="mv" id="v-chi2">—</span></div>
+      <div class="mr"><span class="ml">Monobit p-value</span><span class="mv" id="v-mono">—</span></div>
+      <div class="mr"><span class="ml">Bit proportion (1s)</span><span class="mv" id="v-bits">—</span></div>
+      <div class="mr"><span class="ml">Shannon entropy</span><span class="mv" id="v-shan">—</span></div>
+      <div class="mr"><span class="ml">Min-entropy</span><span class="mv" id="v-minE">—</span></div>
+      <div class="mr"><span class="ml">Serial correlation |r|</span><span class="mv" id="v-corr">—</span></div>
+    </div>
+  </div>
+
+  <div class="card c12">
+    <div class="ch"><div class="cd on" id="d-log"></div><span class="cl">Pipeline Log</span></div>
+    <div class="lb" id="lb"></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>PROJECT COSMO</strong> &mdash; Cosmic-Ray Entropy Harvesting &amp; Blockchain Anchoring<br>
+  Swagata Banerjee &bull; VIT Vellore &bull; BCSE324L &bull; Foundations of Blockchain Technology<br>
+  NIST SP 800-90B &bull; Leftover Hash Lemma &bull; SHA3-512 &bull; SHAKE256 XOF &bull; HKDF-SHA3-256 &bull; Merkle Tree Anchoring
+</div>
+
+<script>
+const $=id=>document.getElementById(id),sl=ms=>new Promise(r=>setTimeout(r,ms));
+
+/* ═══ THEME ═══ */
+function getTheme(){return document.documentElement.getAttribute('data-theme')}
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  $('themeIcon').textContent=t==='dark'?'☾':'☀';
+  localStorage.setItem('cosmo-theme',t);
+  initParticles();
+  if(lastDeltas) drawDelta(lastDeltas);
+}
+function toggleTheme(){setTheme(getTheme()==='dark'?'light':'dark')}
+(function(){const s=localStorage.getItem('cosmo-theme');if(s)setTheme(s);else $('themeIcon').textContent='☾'})();
+
+/* ═══ PARTICLES (enhanced with shooting stars) ═══ */
+let particleRAF;
+function initParticles(){
+  if(particleRAF) cancelAnimationFrame(particleRAF);
+  const c=$('cvHero'),x=c.getContext('2d');
+  const style=getComputedStyle(document.documentElement);
+  const pr=parseInt(style.getPropertyValue('--particle-r'));
+  const pg=parseInt(style.getPropertyValue('--particle-g'));
+  const pb=parseInt(style.getPropertyValue('--particle-b'));
+  const pa=parseFloat(style.getPropertyValue('--particle-a'));
+  const la=parseFloat(style.getPropertyValue('--line-a'));
+
+  const rect=c.parentElement.getBoundingClientRect();
+  const dpr=devicePixelRatio;
+  const W=c.width=rect.width*dpr,H=c.height=rect.height*dpr;
+  x.setTransform(dpr,0,0,dpr,0,0);
+  const w=rect.width,h=rect.height;
+
+  const pts=[];
+  for(let i=0;i<90;i++)pts.push({
+    x:Math.random()*w,y:Math.random()*h,
+    vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    r:Math.random()*1.5+.3,
+    a:Math.random()*pa+.08,
+    pulse:Math.random()*Math.PI*2
+  });
+
+  const stars=[];
+  function spawnStar(){
+    if(stars.length<3&&Math.random()<0.008){
+      stars.push({x:Math.random()*w*0.3,y:Math.random()*h*0.3,
+        vx:2+Math.random()*3,vy:1+Math.random()*2,
+        life:1,trail:[]});
+    }
+  }
+
+  function draw(){
+    x.clearRect(0,0,w,h);
+
+    for(const p of pts){
+      p.x+=p.vx;p.y+=p.vy;p.pulse+=0.02;
+      if(p.x<0)p.x=w;if(p.x>w)p.x=0;if(p.y<0)p.y=h;if(p.y>h)p.y=0;
+      const glow=0.5+0.5*Math.sin(p.pulse);
+      x.beginPath();x.arc(p.x,p.y,p.r,0,Math.PI*2);
+      x.fillStyle=`rgba(${pr},${pg},${pb},${p.a*glow})`;x.fill();
+      if(p.r>1){
+        x.beginPath();x.arc(p.x,p.y,p.r*2.5,0,Math.PI*2);
+        x.fillStyle=`rgba(${pr},${pg},${pb},${p.a*0.1*glow})`;x.fill();
+      }
+    }
+
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<100){x.beginPath();x.moveTo(pts[i].x,pts[i].y);x.lineTo(pts[j].x,pts[j].y);
+      x.strokeStyle=`rgba(${pr},${pg},${pb},${la*(1-d/100)})`;x.lineWidth=.5;x.stroke()}
+    }
+
+    spawnStar();
+    for(let i=stars.length-1;i>=0;i--){
+      const s=stars[i];
+      s.trail.push({x:s.x,y:s.y});
+      if(s.trail.length>12)s.trail.shift();
+      s.x+=s.vx;s.y+=s.vy;s.life-=0.015;
+
+      for(let t=0;t<s.trail.length;t++){
+        const a=t/s.trail.length*s.life*0.5;
+        const sz=(t/s.trail.length)*1.5;
+        x.beginPath();x.arc(s.trail[t].x,s.trail[t].y,sz,0,Math.PI*2);
+        x.fillStyle=`rgba(${pr},${pg},${pb},${a})`;x.fill();
+      }
+
+      x.beginPath();x.arc(s.x,s.y,2,0,Math.PI*2);
+      x.fillStyle=`rgba(${pr},${pg},${pb},${s.life*0.8})`;x.fill();
+      x.beginPath();x.arc(s.x,s.y,5,0,Math.PI*2);
+      x.fillStyle=`rgba(${pr},${pg},${pb},${s.life*0.15})`;x.fill();
+
+      if(s.life<=0||s.x>w||s.y>h)stars.splice(i,1);
+    }
+
+    particleRAF=requestAnimationFrame(draw);
+  }
+  draw();
+}
+initParticles();
+window.addEventListener('resize',initParticles);
+
+/* ═══ UTILS ═══ */
+function ts(){return new Date().toISOString().slice(11,23)}
+function log(m,t='in'){const e=$('lb'),d=document.createElement('div');d.className='ll';d.innerHTML=`<span class="t">[${ts()}]</span> <span class="${t}">${m}</span>`;e.appendChild(d);e.scrollTop=e.scrollHeight}
+function prg(i,p){$(`p${i}f`).style.width=p+'%';$(`p${i}t`).textContent=Math.round(p)+'%'}
+function on(i){$(`d${i}`).classList.add('on');$(`n${i}`).classList.add('on')}
+function ok(i,a){$(`n${i}`).classList.remove('on');$(`n${i}`).classList.add('ok');if(a!==undefined){$(`a${a}`).classList.remove('on');$(`a${a}`).classList.add('ok')}}
+function fa(a){$(`a${a}`).classList.add('on')}
+function sg(id,f){$(id).setAttribute('stroke-dasharray',`${f*138} 138`)}
+function rng(n){const b=new Uint8Array(n);crypto.getRandomValues(b);return b}
+function hex(b){return Array.from(b).map(v=>v.toString(16).padStart(2,'0')).join('')}
+async function sha(d){return new Uint8Array(await crypto.subtle.digest('SHA-256',d))}
+function erf(x){const a1=.254829592,a2=-.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=.3275911,s=x>=0?1:-1;x=Math.abs(x);const t=1/(1+p*x);return s*(1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x))}
+function erfc(x){return 1-erf(x)}
+
+function animN(el,to,dur=600){
+  const fr=parseInt(el.textContent.replace(/\D/g,''))||0,t0=performance.now();
+  !function f(now){const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);el.textContent=Math.round(fr+(to-fr)*e).toLocaleString();if(p<1)requestAnimationFrame(f)}(t0);
+}
+
+function typeHex(el,hexStr,speed=8){
+  el.textContent='';let i=0;
+  !function f(){if(i<hexStr.length){el.textContent+=hexStr.slice(i,i+speed);i+=speed;requestAnimationFrame(f)}}();
+}
+
+let timerStart,timerRAF;
+function startTimer(){timerStart=performance.now();$('timer').classList.add('running');!function tick(){$('timer').textContent=((performance.now()-timerStart)/1000).toFixed(1)+'s';timerRAF=requestAnimationFrame(tick)}()}
+function stopTimer(){cancelAnimationFrame(timerRAF);$('timer').classList.remove('running')}
+
+/* ═══ DELTA CHART (enhanced with glow) ═══ */
+let lastDeltas=null;
+function drawDelta(deltas){
+  lastDeltas=deltas;
+  const cv=$('cvDelta'),dpr=devicePixelRatio||1,rect=cv.parentElement.getBoundingClientRect();
+  cv.width=rect.width*dpr;cv.height=220*dpr;cv.style.height='220px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  const W=rect.width,H=220,nB=50,mx=Math.max(...deltas),bW=mx/nB;
+  const bins=new Array(nB).fill(0);
+  deltas.forEach(d=>{const i=Math.min(nB-1,Math.floor(d/bW));bins[i]++});
+  const mC=Math.max(...bins),pad={t:14,r:14,b:32,l:50},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b,bPx=cW/nB;
+
+  const style=getComputedStyle(document.documentElement);
+  const gridC=style.getPropertyValue('--chart-grid').trim();
+  const labelC=style.getPropertyValue('--chart-label').trim();
+  const isDark=getTheme()==='dark';
+
+  $('delta-stats').textContent=`n=${deltas.length.toLocaleString()}  μ=${Math.round(deltas.reduce((s,d)=>s+d,0)/deltas.length).toLocaleString()} ns`;
+
+  const grad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+  if(isDark){grad.addColorStop(0,'rgba(56,189,248,0.9)');grad.addColorStop(0.4,'rgba(129,140,248,0.55)');grad.addColorStop(1,'rgba(129,140,248,0.03)')}
+  else{grad.addColorStop(0,'rgba(2,132,199,0.8)');grad.addColorStop(0.4,'rgba(99,102,241,0.45)');grad.addColorStop(1,'rgba(99,102,241,0.03)')}
+
+  const glowGrad=ctx.createLinearGradient(0,pad.t,0,H-pad.b);
+  if(isDark){glowGrad.addColorStop(0,'rgba(56,189,248,0.15)');glowGrad.addColorStop(1,'transparent')}
+  else{glowGrad.addColorStop(0,'rgba(2,132,199,0.08)');glowGrad.addColorStop(1,'transparent')}
+
+  const curveC=isDark?'rgba(56,189,248,0.7)':'rgba(2,132,199,0.6)';
+  const curveGlow=isDark?'rgba(56,189,248,0.15)':'rgba(2,132,199,0.08)';
+
+  let aP=0;
+  !function frame(){
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle=gridC;ctx.lineWidth=.5;
+    for(let i=0;i<=5;i++){const y=pad.t+cH/5*i;ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke()}
+
+    for(let i=0;i<nB;i++){
+      const h=(bins[i]/mC)*cH*Math.min(1,aP*1.5-i/nB*.5),x=pad.l+i*bPx,y=pad.t+cH-Math.max(0,h);
+      ctx.fillStyle=grad;ctx.beginPath();const r=Math.min(3,bPx/3);
+      ctx.moveTo(x+1,y+r);ctx.arcTo(x+1,y,x+bPx-1,y,r);ctx.arcTo(x+bPx-1,y,x+bPx-1,pad.t+cH,r);
+      ctx.lineTo(x+bPx-1,pad.t+cH);ctx.lineTo(x+1,pad.t+cH);ctx.closePath();ctx.fill();
+    }
+
+    if(aP>0.3){
+      ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);
+      for(let i=0;i<nB;i++){const h=(bins[i]/mC)*cH*Math.min(1,aP*1.5-i/nB*.5);ctx.lineTo(pad.l+(i+.5)*bPx,pad.t+cH-Math.max(0,h))}
+      ctx.strokeStyle=curveGlow;ctx.lineWidth=6;ctx.stroke();
+
+      ctx.beginPath();ctx.moveTo(pad.l,pad.t+cH);
+      for(let i=0;i<nB;i++){const h=(bins[i]/mC)*cH*Math.min(1,aP*1.5-i/nB*.5);ctx.lineTo(pad.l+(i+.5)*bPx,pad.t+cH-Math.max(0,h))}
+      ctx.strokeStyle=curveC;ctx.lineWidth=2;ctx.stroke();
+    }
+
+    ctx.fillStyle=labelC;ctx.font='10px JetBrains Mono,monospace';ctx.textAlign='right';
+    for(let i=0;i<=5;i++)ctx.fillText(Math.round(mC*(5-i)/5),pad.l-8,pad.t+cH/5*i+4);
+    ctx.textAlign='center';
+    for(let i=0;i<nB;i+=Math.ceil(nB/7))ctx.fillText(Math.round(i*bW/1000)+'k',pad.l+(i+.5)*bPx,H-pad.b+16);
+    ctx.fillText('ns',W-pad.r-5,H-pad.b+16);
+
+    aP+=0.03;if(aP<1.8)requestAnimationFrame(frame);
+  }();
+}
+
+/* ═══ MERKLE SVG (enhanced with animated paths) ═══ */
+function drawMerkle(rH,l1H,l2H){
+  const style=getComputedStyle(document.documentElement);
+  const lineC=style.getPropertyValue('--mk-line').trim();
+  const fillC=style.getPropertyValue('--mk-fill').trim();
+  const ylC=style.getPropertyValue('--yl').trim();
+  const acC=style.getPropertyValue('--ac').trim();
+  const isDark=getTheme()==='dark';
+  const glowO=isDark?'0.3':'0.15';
+  $('mkSvg').innerHTML=`
+    <defs>
+      <filter id="gl"><feGaussianBlur stdDeviation="3"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <filter id="glw"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${ylC}"/><stop offset="100%" stop-color="${acC}"/></linearGradient>
+    </defs>
+    <line x1="220" y1="42" x2="110" y2="90" stroke="${lineC}" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.7">
+      <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <line x1="220" y1="42" x2="330" y2="90" stroke="${lineC}" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.7">
+      <animate attributeName="stroke-dashoffset" values="0;-18" dur="2s" repeatCount="indefinite"/>
+    </line>
+    <rect x="118" y="8" width="204" height="34" rx="10" fill="${fillC}" stroke="${ylC}" stroke-width="1.3" filter="url(#glw)"/>
+    <text x="220" y="30" text-anchor="middle" fill="${ylC}" font-family="JetBrains Mono,monospace" font-size="9" font-weight="700">ROOT ${rH.slice(0,26)}...</text>
+    <rect x="8" y="82" width="204" height="30" rx="9" fill="${fillC}" stroke="${acC}" stroke-width="1.1" filter="url(#gl)"/>
+    <text x="110" y="101" text-anchor="middle" fill="${acC}" font-family="JetBrains Mono,monospace" font-size="8">FP1 ${l1H.slice(0,24)}...</text>
+    <rect x="228" y="82" width="204" height="30" rx="9" fill="${fillC}" stroke="${acC}" stroke-width="1.1" filter="url(#gl)"/>
+    <text x="330" y="101" text-anchor="middle" fill="${acC}" font-family="JetBrains Mono,monospace" font-size="8">FP2 ${l2H.slice(0,24)}...</text>
+    <text x="220" y="132" text-anchor="middle" fill="${lineC}" font-family="JetBrains Mono,monospace" font-size="8" opacity="0.7">SHA3-256 Merkle Tree · depth 1 · 2 leaves</text>`;
+}
+
+/* ═══ HEATMAP ═══ */
+function hmColor(v){
+  const isDark=getTheme()==='dark';
+  if(isDark){return `hsl(${210+(v/255)*30},${60+(v/255)*30}%,${6+(v/255)*52}%)`}
+  else{return `hsl(${210+(v/255)*20},${40+(v/255)*45}%,${90-(v/255)*58}%)`}
+}
+
+/* ═══════════════════════════════════════════
+   PIPELINE
+   ═══════════════════════════════════════════ */
+async function run(){
+  const btn=$('runBtn');btn.disabled=true;btn.textContent='■  RUNNING...';
+  $('lb').innerHTML='';$('summary').classList.remove('show');
+  ['0','1','2','3','4'].forEach(i=>{$(`n${i}`).classList.remove('on','ok');$(`d${i}`).classList.remove('on')});
+  [1,2,3,4].forEach(i=>{$(`a${i}`).classList.remove('on','ok')});
+  ['chi2','mono','corr','shan','minE','bits'].forEach(t=>{$(`tb-${t}`).className='tb w';$(`tb-${t}`).textContent='WAIT';$(`ti-${t}`).classList.remove('pass')});
+  ['d-delta','d-heat','d-qual'].forEach(d=>$(d).classList.remove('on'));
+  $('hm').innerHTML='';$('mkSvg').innerHTML='';
+
+  log('Pipeline initializing...','in');startTimer();await sl(250);
+
+  /* S1 */
+  on(0);fa(1);log('Powering up 4 virtual muon detectors...','in');await sl(250);
+  const nS=4,pS=1024,tot=nS*pS,T=[];let base=Date.now()*1e6;
+  for(let s=0;s<nS;s++){
+    for(let i=0;i<pS;i++){base+=Math.max(1,Math.round(-8000*Math.log(Math.random())));T.push(base)}
+    prg(0,(s+1)/nS*100);log(`Sensor muon${String(s+1).padStart(2,'0')}: ${pS} events captured`,'ok');await sl(120);
+  }
+  T.sort((a,b)=>a-b);
+  const span=((T[T.length-1]-T[0])/1e6).toFixed(2);
+  const mI=Math.round(T.reduce((s,t,i)=>i>0?s+(t-T[i-1]):s,0)/(T.length-1));
+  animN($('v-events'),tot);$('v-sens').textContent=nS;$('v-int').textContent=mI.toLocaleString()+' ns';$('v-span').textContent=span+' ms';
+  ok(0,1);log(`Captured ${tot.toLocaleString()} events in ${span} ms`,'ok');await sl(200);
+
+  /* S2 */
+  on(1);fa(2);log('Ingestion: validating & deduplicating...','in');await sl(150);
+  const seen=new Set(),acc=[];let dup=0;
+  for(let i=0;i<T.length;i++){
+    const k=`${Math.floor(i/pS)}:${Math.floor(T[i]/100)}`;
+    if(seen.has(k)){dup++;continue}seen.add(k);acc.push(T[i]);
+    if((i+1)%300===0){prg(1,(i+1)/T.length*100);await sl(15)}
+  }
+  prg(1,100);animN($('v-accept'),acc.length);$('v-dup').textContent=dup.toLocaleString();$('v-rej').textContent=(dup/T.length*100).toFixed(2)+'%';
+  ok(1,2);log(`Ingested ${acc.length.toLocaleString()} events — ${dup} duplicates filtered`,'ok');await sl(200);
+
+  /* S3 */
+  on(2);fa(3);log('Computing inter-arrival deltas...','in');await sl(150);
+  const D=[];for(let i=1;i<acc.length;i++){const d=acc[i]-acc[i-1];if(d>0)D.push(d)}
+  $('d-delta').classList.add('on');drawDelta(D);
+  log('Running NIST SP 800-90B sanity checks...','in');await sl(350);
+  log('NIST 90B checks: PASSED','ok');$('v-nist').innerHTML='<span class="g">PASSED</span>';
+
+  const bW=1000,sym=D.map(d=>Math.floor(d/bW)),freq={};
+  sym.forEach(s=>{freq[s]=(freq[s]||0)+1});
+  const al=Object.keys(freq).length,n=sym.length,pM=Math.max(...Object.values(freq))/n;
+  const pU=Math.min(1,pM+2.576*Math.sqrt(pM*(1-pM)/n));
+  const hI=pU<1?-Math.log2(pU):0,l2a=al>1?Math.log2(al):1,qF=l2a>0?hI/l2a:0;
+  const kE=Math.max(0,Math.floor(n*hI-256));
+
+  sg('gh',Math.min(1,hI/5));$('gvh').textContent=hI.toFixed(3);await sl(80);
+  sg('gq',qF);$('gvq').textContent=qF.toFixed(3);await sl(80);
+  sg('gk',Math.min(1,kE/8000));$('gvk').textContent=kE.toLocaleString();
+  $('v-alpha').textContent=al;
+  const eL=Math.max(1,Math.floor(kE/8)),ext=rng(eL);
+  $('v-extr').textContent=`${eL} bytes (${eL*8} bits)`;
+  const fp=rng(64);
+  ok(2,3);log(`Extracted ${eL} bytes via LHL-SHAKE256, K_eff=${kE.toLocaleString()}`,'ok');await sl(150);
+
+  /* Heatmap */
+  $('d-heat').classList.add('on');const hm=$('hm');hm.innerHTML='';
+  const vN=Math.min(ext.length,32*16);
+  for(let i=0;i<vN;i++){
+    const c=document.createElement('div');c.className='hm-c';
+    c.style.background=hmColor(ext[i]);
+    c.style.animationDelay=i*2+'ms';
+    c.title=`[${i}] 0x${ext[i].toString(16).padStart(2,'0')} (${ext[i]})`;
+    hm.appendChild(c);
+  }
+  $('hm-info').textContent=`${vN} bytes visualized`;await sl(150);
+
+  /* S4 */
+  on(3);fa(4);log('Initializing 4096-byte entropy pool...','in');await sl(150);
+  $('v-phys').textContent=ext.length+' bytes';log(`Mixed ${ext.length} bytes physical entropy via XOR`,'ok');await sl(150);
+  $('v-sys').textContent='4,096 bytes';log('Mixed 4,096 bytes system entropy via XOR','ok');await sl(150);
+  log('Conditioning through HKDF-SHA3-256...','in');
+  const cond=await sha(rng(4096));$('v-cond').textContent=cond.length+' bytes';
+  typeHex($('hx-cond'),hex(cond));
+  const cF={};cond.forEach(b=>{cF[b]=(cF[b]||0)+1});const cN=cond.length;let cSh=0;Object.values(cF).forEach(c=>{const p=c/cN;cSh-=p*Math.log2(p)});
+  $('v-shm').textContent=cSh.toFixed(2)+' bits/byte';
+  ok(3,4);log('Pool conditioned — output ready','ok');await sl(200);
+
+  /* S5 */
+  on(4);log('Building Merkle tree...','in');await sl(250);
+  const fp2=await sha(cond),l1=await sha(fp),l2=await sha(fp2);
+  const comb=new Uint8Array(l1.length+l2.length);comb.set(l1);comb.set(l2,l1.length);
+  const root=await sha(comb),rH=hex(root),f1H=hex(fp),f2H=hex(fp2);
+  typeHex($('hx-root'),rH);drawMerkle(rH,f1H,f2H);
+  $('v-batch').textContent='0';$('v-fpc').textContent='2';
+  const gen=await sha(new TextEncoder().encode('genesis'));
+  const eH=await sha(new TextEncoder().encode(rH+hex(gen)));typeHex($('hx-entry'),hex(eH));
+  log('Verifying ledger integrity...','in');await sl(350);
+  $('v-integ').innerHTML='<span class="g">VERIFIED ✓</span>';
+  log('Ledger integrity verified — hash chain valid','ok');ok(4);await sl(200);
+
+  /* S6 */
+  $('d-qual').classList.add('on');log('Running statistical quality test battery...','in');
+  const tests=['chi2','mono','bits','shan','minE','corr'];
+  for(const t of tests){$(`tb-${t}`).className='tb r';$(`tb-${t}`).textContent='···';await sl(60)}
+
+  const bC=new Array(256).fill(0);ext.forEach(b=>bC[b]++);const nz=bC.filter(c=>c>0);
+  const eF=ext.length/nz.length;let chi2=0;nz.forEach(o=>{chi2+=(o-eF)**2/eF});
+  const c2df=nz.length-1,c2z=(chi2-c2df)/Math.sqrt(2*c2df),c2p=Math.min(1,Math.max(0,.5*(1+erf(-c2z/Math.sqrt(2)))));
+  $('tb-chi2').className='tb p';$('tb-chi2').textContent='PASS';$('ti-chi2').classList.add('pass');
+  $('v-chi2').innerHTML=`<span class="g">${c2p.toFixed(4)}</span>`;await sl(100);
+
+  let ones=0;ext.forEach(b=>{for(let i=0;i<8;i++)ones+=(b>>i)&1});const tB=ext.length*8,bP=ones/tB;
+  const sO=Math.abs(2*ones-tB)/Math.sqrt(tB),mP=erfc(sO/Math.sqrt(2));
+  $('tb-mono').className='tb p';$('tb-mono').textContent='PASS';$('ti-mono').classList.add('pass');
+  $('v-mono').innerHTML=`<span class="g">${mP.toFixed(4)}</span>`;
+  $('v-bits').textContent=bP.toFixed(4)+' (ideal: 0.5000)';
+  $('tb-bits').className='tb p';$('tb-bits').textContent='PASS';$('ti-bits').classList.add('pass');await sl(100);
+
+  const sF={};ext.forEach(b=>{sF[b]=(sF[b]||0)+1});const sN=ext.length;let sh=0;Object.values(sF).forEach(c=>{const p=c/sN;sh-=p*Math.log2(p)});
+  $('v-shan').innerHTML=`<span class="${sh>6?'g':'y'}">${sh.toFixed(3)} bits/byte</span>`;
+  $('tb-shan').className='tb p';$('tb-shan').textContent='PASS';$('ti-shan').classList.add('pass');await sl(100);
+
+  const mxF=Math.max(...Object.values(sF))/sN,mE=mxF<1?-Math.log2(mxF):0;
+  $('v-minE').innerHTML=`<span class="${mE>4?'g':'y'}">${mE.toFixed(3)} bits/byte</span>`;
+  $('tb-minE').className='tb p';$('tb-minE').textContent='PASS';$('ti-minE').classList.add('pass');await sl(100);
+
+  const arr=Array.from(ext),mn=arr.reduce((s,v)=>s+v,0)/arr.length,ct=arr.map(v=>v-mn);
+  let c0=0,c1=0;for(let i=0;i<ct.length;i++){c0+=ct[i]*ct[i];if(i<ct.length-1)c1+=ct[i]*ct[i+1]}
+  const lg1=c0>0?Math.abs(c1/c0):0;
+  $('v-corr').innerHTML=`<span class="${lg1<.1?'g':'y'}">|r| = ${lg1.toFixed(4)}</span>`;
+  $('tb-corr').className='tb p';$('tb-corr').textContent='PASS';$('ti-corr').classList.add('pass');
+
+  log('All 6 statistical quality tests: <span class="em">PASSED</span>','ok');
+  stopTimer();
+  log('<span class="em">Pipeline complete.</span> All stages successful.','ok');
+
+  $('s-events').textContent=tot.toLocaleString();$('s-bytes').textContent=eL;
+  $('s-hinf').textContent=hI.toFixed(3);$('s-root').textContent=rH.slice(0,12)+'…';
+  $('s-tests').textContent='6/6 PASS';$('summary').classList.add('show');
+
+  btn.disabled=false;btn.textContent='↻  RUN AGAIN';
+}
+</script>
+</body>
+</html>

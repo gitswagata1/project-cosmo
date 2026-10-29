@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anchoring
+  namespace: cosmo
+  labels:
+    app: anchoring
+    app.kubernetes.io/part-of: project-cosmo
+    app.kubernetes.io/component: anchoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anchoring
+  template:
+    metadata:
+      labels:
+        app: anchoring
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9093"
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10004
+        fsGroup: 10004
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: cosmo-anchoring
+      containers:
+        - name: anchoring
+          image: cosmo/anchoring:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9093
+              protocol: TCP
+          env:
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cosmo-redis
+                  key: url
+            - name: BATCH_INTERVAL_S
+              value: "30"
+            - name: LEDGER_PATH
+              value: "/data/ledger.jsonl"
+            - name: LOG_LEVEL
+              value: "INFO"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          volumeMounts:
+            - name: ledger
+              mountPath: /data
+      volumes:
+        - name: ledger
+          persistentVolumeClaim:
+            claimName: cosmo-ledger-pvc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cosmo-anchoring
+  namespace: cosmo
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: cosmo-ledger-pvc
+  namespace: cosmo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard

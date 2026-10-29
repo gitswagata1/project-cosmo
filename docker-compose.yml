@@ -1,0 +1,74 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  ingestion:
+    build: ./services/ingestion
+    ports:
+      - "50051:50051"
+      - "9090:9090"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      MQTT_BROKER: mosquitto
+      MQTT_PORT: "1883"
+      GRPC_PORT: "50051"
+      METRICS_PORT: "9090"
+      LOG_LEVEL: DEBUG
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  extraction:
+    build: ./services/extraction
+    ports:
+      - "9091:9091"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      BATCH_SIZE: "256"
+      MIN_ENTROPY_THRESHOLD: "0.5"
+      SECURITY_PARAM_BITS: "128"
+      METRICS_PORT: "9091"
+      LOG_LEVEL: DEBUG
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  mixing-pool:
+    build: ./services/mixing-pool
+    ports:
+      - "9092:9092"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      POOL_SIZE_BYTES: "4096"
+      MIX_INTERVAL_S: "2.0"
+      METRICS_PORT: "9092"
+      LOG_LEVEL: DEBUG
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  anchoring:
+    build: ./services/anchoring
+    ports:
+      - "9093:9093"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      BATCH_INTERVAL_S: "15"
+      LEDGER_PATH: /data/ledger.jsonl
+      METRICS_PORT: "9093"
+      LOG_LEVEL: DEBUG
+    volumes:
+      - ledger-data:/data
+    depends_on:
+      redis:
+        condition: service_healthy
+
+volumes:
+  ledger-data:
