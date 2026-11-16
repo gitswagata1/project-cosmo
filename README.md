@@ -242,3 +242,10 @@ The pipeline gates key derivation on a full statistical battery:
 <p align="center">
   <strong>Swagata Banerjee</strong> · VIT Vellore · BCSE324L · Foundations of Blockchain Technology
 </p>
+
+## Roadmap, contributing and citation
+
+- **Roadmap:** [ROADMAP.md](ROADMAP.md) lists planned work and directions for the project.
+- **Contributing:** see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+  [Code of Conduct](CODE_OF_CONDUCT.md). Issues labelled `good first issue` are a friendly start.
+
