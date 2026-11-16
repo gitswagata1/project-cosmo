@@ -7,4 +7,4 @@ prometheus-client==0.20.0
 pydantic==2.6.4
 redis==5.0.3
 scipy==1.13.0
-uvloop==0.19.0;sys_platform!='win32'
+uvloop==0.23.0;sys_platform!='win32'
