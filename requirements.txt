@@ -1,7 +1,7 @@
 cryptography==42.0.5
 grpcio==1.62.1
 grpcio-tools==1.62.1
-numpy==1.26.4
+numpy==2.5.4
 paho-mqtt==2.0.0
 prometheus-client==0.20.0
 pydantic==2.6.4
